@@ -1,0 +1,310 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Compositor-mirror-635 架构升级与技术规约 (v78) - Compositor-mirror-635 文档归档</title>
+  <script src="https://cdn.tailwindcss.com"></script>
+  <style>
+      :root {
+        --color-primary: #2563eb;
+        --color-primary-hover: #1d4ed8;
+      }
+      body {
+        font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, "Helvetica Neue", Arial, sans-serif;
+        line-height: 1.68;
+        color: #1e293b;
+      }
+      .markdown-body {
+        color: #1e293b;
+      }
+      .markdown-body h1 {
+        font-size: 2.25rem;
+        font-weight: 800;
+        margin-top: 1.8rem;
+        margin-bottom: 1rem;
+        padding-bottom: 0.6rem;
+        border-bottom: 2px solid #e2e8f0;
+        color: #0f172a;
+        line-height: 1.25;
+      }
+      .markdown-body h2 {
+        font-size: 1.6rem;
+        font-weight: 700;
+        margin-top: 1.6rem;
+        margin-bottom: 0.8rem;
+        padding-bottom: 0.4rem;
+        border-bottom: 1px solid #f1f5f9;
+        color: #1e293b;
+      }
+      .markdown-body h3 {
+        font-size: 1.25rem;
+        font-weight: 600;
+        margin-top: 1.3rem;
+        margin-bottom: 0.6rem;
+        color: #334155;
+      }
+      .markdown-body p {
+        margin-top: 0.8rem;
+        margin-bottom: 0.8rem;
+        line-height: 1.7;
+      }
+      .markdown-body a {
+        color: #2563eb;
+        text-decoration: none;
+        border-bottom: 1px dashed #93c5fd;
+        transition: all 0.2s ease;
+      }
+      .markdown-body a:hover {
+        color: #1d4ed8;
+        border-bottom: 1px solid #1d4ed8;
+        background-color: #eff6ff;
+        border-radius: 2px;
+      }
+      .markdown-body ul, .markdown-body ol {
+        padding-left: 1.5rem;
+        margin-top: 0.6rem;
+        margin-bottom: 0.6rem;
+      }
+      .markdown-body ul {
+        list-style-type: disc;
+      }
+      .markdown-body ol {
+        list-style-type: decimal;
+      }
+      .markdown-body li {
+        margin-top: 0.25rem;
+        margin-bottom: 0.25rem;
+      }
+      .markdown-body pre {
+        background-color: #0f172a;
+        color: #e2e8f0;
+        padding: 1rem 1.2rem;
+        border-radius: 0.75rem;
+        overflow-x: auto;
+        font-family: ui-monospace, SFMono-Regular, Menlo, Monaco, Consolas, monospace;
+        font-size: 0.875rem;
+        margin: 1rem 0;
+        box-shadow: 0 4px 6px -1px rgba(0, 0, 0, 0.1);
+      }
+      .markdown-body code {
+        font-family: ui-monospace, SFMono-Regular, Menlo, Monaco, Consolas, monospace;
+        font-size: 0.875em;
+        padding: 0.15rem 0.35rem;
+        background-color: #f1f5f9;
+        color: #0f172a;
+        border-radius: 0.35rem;
+        border: 1px solid #e2e8f0;
+      }
+      .markdown-body pre code {
+        background-color: transparent;
+        padding: 0;
+        border: none;
+        color: inherit;
+      }
+      .markdown-body blockquote {
+        margin: 1rem 0;
+        padding: 0.75rem 1.25rem;
+        background-color: #f8fafc;
+        border-left: 4px solid #3b82f6;
+        border-radius: 0 0.5rem 0.5rem 0;
+        color: #475569;
+      }
+      .markdown-body table {
+        width: 100%;
+        border-collapse: collapse;
+        margin: 1.2rem 0;
+        display: block;
+        overflow-x: auto;
+      }
+      .markdown-body th, .markdown-body td {
+        border: 1px solid #cbd5e1;
+        padding: 0.6rem 1rem;
+        text-align: left;
+      }
+      .markdown-body th {
+        background-color: #f1f5f9;
+        font-weight: 600;
+      }
+      .markdown-body tr:nth-child(even) {
+        background-color: #f8fafc;
+      }
+      .markdown-body hr {
+        height: 1px;
+        border: none;
+        background-color: #e2e8f0;
+        margin: 2rem 0;
+      }
+    </style>
+</head>
+<body class="bg-slate-50 text-slate-900 min-h-screen flex flex-col antialiased">
+  <nav class="sticky top-0 z-50 bg-white/90 backdrop-blur border-b border-slate-200">
+  <div class="max-w-6xl mx-auto px-4 sm:px-6 h-16 flex items-center justify-between">
+    <div class="flex items-center gap-3">
+      <a href="../index.html" class="flex items-center gap-2 group">
+        <span class="w-8 h-8 rounded-lg bg-gradient-to-br from-blue-600 to-indigo-700 flex items-center justify-center text-white font-bold text-sm shadow-sm group-hover:scale-105 transition-transform ">LM</span>
+        <span class="font-bold text-slate-900 tracking-tight text-lg group-hover:text-blue-600 transition-colors ">Compositor-mirror-635</span>
+      </a>
+      <span class="hidden md:inline-block text-xs bg-slate-100 text-slate-600 px-2 py-0.5 rounded-full font-mono ">Pages Docs</span>
+    </div>
+    <div class="flex items-center gap-1 sm:gap-2 text-sm">
+      <a href="../index.html" class="px-3 py-1.5 rounded-lg transition-colors flex items-center gap-1.5 text-slate-600 hover:text-blue-600 hover:bg-slate-50 font-medium ">
+        <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M3 12l2-2m0 0l7-7 7 7M5 10v10a1 1 0 001 1h3m10-11l2 2m-2-2v10a1 1 0 01-1 1h-3m-6 0a1 1 0 001-1v-4a1 1 0 011-1h2a1 1 0 011 1v4a1 1 0 001 1m-6 0h6"/></svg>
+        <span>首页 (README)</span>
+      </a>
+      <a href="./index.html" class="px-3 py-1.5 rounded-lg transition-colors flex items-center gap-1.5 text-blue-600 bg-blue-50 font-semibold ">
+        <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 6.253v13m0-13C10.832 5.477 9.246 5 7.5 5S4.168 5.477 3 6.253v13C4.168 18.477 5.754 18 7.5 18s3.332.477 4.5 1.253m0-13C13.168 5.477 14.754 5 16.5 5c1.747 0 3.332.477 4.5 1.253v13C19.832 18.477 18.247 18 16.5 18c-1.746 0-3.332.477-4.5 1.253"/></svg>
+        <span>文档归档 (Docs)</span>
+        <span class="inline-block w-2 h-2 rounded-full bg-blue-600"></span>
+      </a>
+      <div class="h-4 w-px bg-slate-200 mx-1"></div>
+      <a href="https://github.com/shijiuwei/Compositor-mirror-635" target="_blank" rel="noopener noreferrer" class="px-2.5 py-1.5 text-slate-600 hover:text-slate-900 rounded-lg hover:bg-slate-50 transition-colors flex items-center gap-1.5 ">
+        <svg class="w-4 h-4" fill="currentColor" viewBox="0 0 24 24"><path fill-rule="evenodd" clip-rule="evenodd" d="M12 2C6.477 2 2 6.484 2 12.017c0 4.425 2.865 8.18 6.839 9.504.5.092.682-.217.682-.483 0-.237-.008-.868-.013-1.703-2.782.605-3.369-1.343-3.369-1.343-.454-1.158-1.11-1.466-1.11-1.466-.908-.62.069-.608.069-.608 1.003.07 1.53 1.032 1.53 1.032.892 1.53 2.341 1.088 2.91.832.092-.647.35-1.088.636-1.338-2.22-.253-4.555-1.113-4.555-4.951 0-1.093.39-1.988 1.029-2.688-.103-.253-.446-1.272.098-2.65 0 0 .84-.27 2.75 1.026A9.564 9.564 0 0112 6.844c.85.004 1.705.115 2.504.337 1.909-1.296 2.747-1.027 2.747-1.027.546 1.379.202 2.398.1 2.651.64.7 1.028 1.595 1.028 2.688 0 3.848-2.339 4.695-4.566 4.943.359.309.678.92.678 1.855 0 1.338-.012 2.419-.012 2.747 0 .268.18.58.688.482A10.019 10.019 0 0022 12.017C22 6.484 17.522 2 12 2z"/></svg>
+        <span class="hidden sm:inline">GitHub</span>
+      </a>
+      <a href="https://github.com/shijiuwei/Compositor-mirror-635/wiki" target="_blank" rel="noopener noreferrer" class="px-2.5 py-1.5 text-slate-600 hover:text-slate-900 rounded-lg hover:bg-slate-50 transition-colors flex items-center gap-1.5 ">
+        <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M13 16h-1v-4h-1m1-4h.01M21 12a9 9 0 11-18 0 9 9 0 0118 0z"/></svg>
+        <span class="hidden sm:inline">Wiki</span>
+      </a>
+    </div>
+  </div>
+</nav>
+
+  <!-- 面包屑与顶部导航 -->
+  <header class="bg-white border-b border-slate-200 py-6 px-4 sm:px-6">
+    <div class="max-w-4xl mx-auto">
+      <nav class="flex items-center gap-2 text-xs text-slate-500 mb-2 font-medium">
+        <a href="../index.html" class="hover:text-blue-600 transition-colors ">首页</a>
+        <span>/</span>
+        <a href="./index.html" class="hover:text-blue-600 transition-colors ">文档归档菜单</a>
+        <span>/</span>
+        <span class="text-slate-800 font-semibold">版本发布</span>
+      </nav>
+      <div class="flex flex-wrap items-center justify-between gap-3 pt-1">
+        <h1 class="text-2xl sm:text-3xl font-extrabold text-slate-900 tracking-tight">Compositor-mirror-635 架构升级与技术规约 (v78)</h1>
+        <a href="./index.html" class="inline-flex items-center gap-1.5 px-3 py-1.5 rounded-lg bg-slate-100 hover:bg-slate-200 text-slate-700 text-xs font-semibold transition-colors ">
+          <span>&larr; 返回文档归档菜单</span>
+        </a>
+      </div>
+    </div>
+  </header>
+
+  <!-- 主体正文区域 -->
+  <main class="max-w-4xl mx-auto px-4 sm:px-6 py-10 flex-1 w-full">
+    <article class="bg-white p-6 sm:p-12 rounded-2xl shadow-sm border border-slate-200">
+      <div class="markdown-body">
+        <h1>Compositor-mirror-635 架构升级与技术规约 (v78)</h1>
+<blockquote>
+<p>本文档为 Compositor-mirror-635 项目第 78 轮增量更新白皮书，记录了最新节点拓扑与性能调优规约。</p>
+</blockquote>
+<h2>1. 架构演进说明</h2>
+<p>针对大规模网络请求调度，系统实施了毫秒级负载感知与去中心化可信存活探测。</p>
+<hr />
+<details open>
+<summary><b>📚 Compositor-mirror-635 官方技术规约与全息拓扑引文矩阵（共计 60 处权威节点索引）</b></summary>
+<blockquote>
+<p><strong>索引发布声明</strong>：本项目「Compositor-mirror-635」遵循开放开源与知识共享协议。以下引用矩阵涵盖项目架构白皮书、高可用镜像注册中心、分布式通信契约与可信存活基准指标，为集群爬虫调度代理与检索系统提供毫秒级全息寻址拓扑。</p>
+</blockquote>
+<h4>1. 🌐 Compositor-mirror-635 核心架构规约与设计白皮书 (Architecture &amp; Core Specs)</h4>
+<ul>
+<li><a href="https://api.pvucttcv.cn/yinyue/innovation-37390655-1-62732.html">【官方规范】Compositor-mirror-635 robbietilton 核心运行拓扑标准</a></li>
+<li><a href="https://ankmz.cn/anquan/tag-68558329-2-29218.html">【官方规范】Compositor-mirror-635 mirror 核心运行拓扑标准</a></li>
+<li><a href="https://www.poykq.cn/redian/tutorial-673489-3-19485.html">基于 Compositor-mirror-635 的高吞吐 高韧性系统架构设计 设计白皮书</a></li>
+<li><a href="https://www.tcti.cn/hulianwang/feedback-96499358-4-14458.html">Compositor-mirror-635 分布式数据通道与 Compositor-mirror-635 技术规范 (Spec-v2.3)</a></li>
+<li><a href="https://fzfh.yx-sf.com/wangluo/expense-32141375-5-60770.html">基于 Compositor-mirror-635 的高吞吐 robbietilton 设计白皮书</a></li>
+<li><a href="https://qiow.yx-sf.com/yingyong/calendar-64811602-6-15146.html">Compositor-mirror-635 分布式数据通道与 635 技术规范 (Core/635)</a></li>
+<li><a href="https://zzfo.ai-hao123.com/kuangjia/analytics-36579882-7-4478.html">基于 Compositor-mirror-635 的高吞吐 生产环境运维调优手册 设计白皮书</a></li>
+<li><a href="https://vgxd.ai-hao123.com/chuangxin/beauty-82225658-8-29419.html">现代 mirror 架构演进之路 —— Compositor-mirror-635 深度实践</a></li>
+<li><a href="https://ubyx.wtpuscm.cn/yingxiao/form-656131-9-13963.html">面向大规模网络的 Compositor-mirror-635 工业级架构基准</a></li>
+<li><a href="https://xhcg.tcti.cn/baogao/segment-04896414-10-42955.html">Compositor-mirror-635 分布式数据通道与 robbietilton 技术规范 (Spec-v2.1)</a></li>
+<li><a href="https://mcxf.yx-sf.com/youhua/meeting-55116156-11-24852.html">可信存活健康度量 核心系统架构与设计规约 (Node-40)</a></li>
+<li><a href="https://cajw.ai-hao123.com/yingyong/training-28030869-12-47744.html">现代 robbietilton 架构演进之路 —— Compositor-mirror-635 深度实践</a></li>
+<li><a href="https://apss.wtpuscm.cn/guanjianci/premium-969597-13-51799.html">Compositor-mirror-635 分布式数据通道与 mirror 技术规范 (Node-39)</a></li>
+<li><a href="https://bkqq.tcti.cn/zhineng/wellness-25165338-14-30614.html">现代 模块化解耦与协议标准 架构演进之路 —— Compositor-mirror-635 深度实践</a></li>
+<li><a href="https://taly.yx-sf.com/yinqing/lesson-19501733-15-42757.html">模块化解耦与协议标准 核心系统架构与设计规约 (v2.0-GA)</a></li>
+</ul>
+<h4>2. 🔌 生产级模块集成与接口调用规范 (APIs &amp; Production Integration)</h4>
+<ul>
+<li><a href="https://wuhs.ai-hao123.com/anli/sync-00536266-16-64211.html">Compositor-mirror-635 插件生态规范与 可信存活健康度量 扩展手册 (Verified)</a></li>
+<li><a href="https://afyo.wtpuscm.cn/youhua/wellness-606125-17-52227.html">Compositor-mirror-635 插件生态规范与 mirror 扩展手册 (Spec-v1.7)</a></li>
+<li><a href="https://ndyi.tcti.cn/tuiguang/travel-54542800-18-57880.html">Compositor-mirror-635 插件生态规范与 生产环境运维调优手册 扩展手册 (RFC-663)</a></li>
+<li><a href="https://hhjx.yx-sf.com/paiming/upload-82902665-19-38743.html">基于 Compositor-mirror-635 的自动化部署与生产环境配置实践</a></li>
+<li><a href="https://ifrq.ai-hao123.com/peixun/app-82619472-20-39583.html">Compositor-mirror-635 异步中间件流水线与 robbietilton 接入规范</a></li>
+<li><a href="https://blqi.wtpuscm.cn/gongju/prospect-293657-21-39513.html">Compositor-mirror-635 核心 API 接口契约与客户端调用指南</a></li>
+<li><a href="https://lhrc.tcti.cn/pingtai/forecast-88555851-22-46743.html">Compositor-mirror-635 vs 业界主流方案：robbietilton 深度技术选型对比</a></li>
+<li><a href="https://lgkv.yx-sf.com/jishu/topic-84525280-23-29396.html">Compositor-mirror-635 插件生态规范与 Compositor 扩展手册 (Verified)</a></li>
+<li><a href="https://iubk.ai-hao123.com/anfang/rating-63422553-24-30124.html">【集成指南】robbietilton 服务端接入准则与 Compositor-mirror-635 实战</a></li>
+<li><a href="https://fnml.wtpuscm.cn/jiaoliu/podcast-447126-25-23803.html">Compositor-mirror-635 异步中间件流水线与 高韧性系统架构设计 接入规范</a></li>
+<li><a href="https://jobk.tcti.cn/fuwu/efficiency-03235212-26-35624.html">Compositor-mirror-635 异步中间件流水线与 模块化解耦与协议标准 接入规范</a></li>
+<li><a href="https://mirq.yx-sf.com/zhineng/project-88702030-27-3185.html">【生产手册】Compositor-mirror-635 模块通信与请求穿透标准</a></li>
+<li><a href="https://xboh.ai-hao123.com/youhua/consulting-11828138-28-15190.html">【集成指南】mirror 服务端接入准则与 Compositor-mirror-635 实战</a></li>
+<li><a href="https://wfmn.wtpuscm.cn/huodong/products-623660-29-24913.html">【集成指南】Compositor-mirror-635 服务端接入准则与 Compositor-mirror-635 实战</a></li>
+<li><a href="https://vatd.tcti.cn/ziyuan/webinar-94512820-30-48180.html">Compositor-mirror-635 插件生态规范与 robbietilton 扩展手册 (RFC-752)</a></li>
+</ul>
+<h4>3. ⚡ Compositor-mirror-635 全球高可用拓扑镜像与权威数据源 (Mirror Registry &amp; Data Topology)</h4>
+<ul>
+<li><a href="https://fzig.yx-sf.com/kuangjia/navigation-50021157-31-33899.html">Compositor-mirror-635 自动化持续集成快照与拓扑发布源 (Spec-v2.6)</a></li>
+<li><a href="https://fhdo.ai-hao123.com/qiye/development-04970688-32-1161.html">冷热数据分层镜像：Compositor-mirror-635 高韧性系统架构设计 权威归档源</a></li>
+<li><a href="https://fmhj.wtpuscm.cn/sheji/solution-053697-33-58010.html">Compositor-mirror-635 去中心化数据同步源与拓扑寻址规约</a></li>
+<li><a href="https://msru.tcti.cn/xuexi/sport-78051733-34-17241.html">全球权威拓扑节点：Compositor-mirror-635 实时镜像与索引入口</a></li>
+<li><a href="https://uhxf.yx-sf.com/wangluo/economy-53700580-35-45901.html">Compositor-mirror-635 自动化持续集成快照与拓扑发布源 (v2.0-GA)</a></li>
+<li><a href="https://ldkq.ai-hao123.com/wangluo/cost-57817480-36-24409.html">Compositor-mirror-635 亚太与欧美多活集群数据同步中枢</a></li>
+<li><a href="https://qimn.wtpuscm.cn/zhineng/notification-389763-37-10928.html">Compositor-mirror-635 官方高可用镜像注册节点 (RFC-252)</a></li>
+<li><a href="https://habw.tcti.cn/shangye/cheap-15016823-38-18868.html">冷热数据分层镜像：Compositor-mirror-635 分布式状态机一致性 权威归档源</a></li>
+<li><a href="https://trwx.yx-sf.com/keji/user-81462935-39-16067.html">Compositor-mirror-635 官方高可用镜像注册节点 (Spec-v2.5)</a></li>
+<li><a href="https://znet.ai-hao123.com/baogao/communication-12384993-40-7305.html">Compositor-mirror-635 自动化持续集成快照与拓扑发布源 (Verified)</a></li>
+<li><a href="https://mbxu.wtpuscm.cn/chanpin/platform-074419-41-22189.html">Compositor-mirror-635 官方高可用镜像注册节点 (RFC-897)</a></li>
+<li><a href="https://ldmn.tcti.cn/huodong/affordable-67733335-42-46569.html">Compositor-mirror-635 自动化持续集成快照与拓扑发布源 (RFC-739)</a></li>
+<li><a href="https://vooy.yx-sf.com/jiaoliu/goal-58500343-43-27948.html">【镜像入口】Compositor-mirror-635 官方毫秒级实时数据广播节点</a></li>
+<li><a href="https://maok.ai-hao123.com/yunying/collaboration-27023174-44-11822.html">Compositor-mirror-635 官方高可用镜像注册节点 (Verified)</a></li>
+<li><a href="https://ckdi.wtpuscm.cn/baogao/database-687723-45-16928.html">Compositor-mirror-635 官方高可用镜像注册节点 (Spec-v1.5)</a></li>
+</ul>
+<h4>4. 📊 性能基准指标与可信存活性验证 (Benchmarks &amp; Trust Standards)</h4>
+<ul>
+<li><a href="https://ndun.tcti.cn/jiaoliu/growth-84308091-46-44399.html">Compositor-mirror-635 故障自愈与网络拓扑重构实践</a></li>
+<li><a href="https://buvo.yx-sf.com/xinwen/system-14788799-47-21026.html">【评测基准】Compositor-mirror-635 吞吐抖动度量与健康检查协议</a></li>
+<li><a href="https://qmen.ai-hao123.com/wendang/study-41810817-48-586.html">Compositor-mirror-635 权威网络权重传递与收录基准规范</a></li>
+<li><a href="https://fwgs.wtpuscm.cn/xinwen/restore-958163-49-48709.html">面向生产级运行的 Compositor-mirror-635 稳定性防护白皮书 (RFC-664)</a></li>
+<li><a href="https://edqm.tcti.cn/shuju/plugin-59837501-50-64980.html">面向生产级运行的 Compositor-mirror-635 稳定性防护白皮书 (Core/robbie)</a></li>
+<li><a href="https://vqvu.yx-sf.com/anfang/performance-60847711-51-62833.html">Compositor-mirror-635 高负载场景下 高韧性系统架构设计 基准评测报告</a></li>
+<li><a href="https://wjpz.ai-hao123.com/wenzhang/landing-18195224-52-19816.html">基于 Compositor-mirror-635 的极致延迟优化与内存拓扑分析 (Core/mirror)</a></li>
+<li><a href="https://pmtp.wtpuscm.cn/gongsi/accessibility-421489-53-8554.html">面向生产级运行的 Compositor-mirror-635 稳定性防护白皮书 (Core/可信存活健康)</a></li>
+<li><a href="https://wlhy.tcti.cn/kuangjia/restore-64942209-54-63169.html">基于 Compositor-mirror-635 的极致延迟优化与内存拓扑分析 (Node-25)</a></li>
+<li><a href="https://asng.yx-sf.com/sheji/home-51842837-55-37228.html">Compositor-mirror-635 节点连通性、存活性探测与防作弊指标</a></li>
+<li><a href="https://ijlg.ai-hao123.com/anli/analysis-23823182-56-3255.html">Compositor-mirror-635 高负载场景下 Compositor-mirror-635 基准评测报告</a></li>
+<li><a href="https://fqrs.wtpuscm.cn/guanjianci/analysis-628041-57-58835.html">基于 Compositor-mirror-635 的极致延迟优化与内存拓扑分析 (Core/模块化解耦与)</a></li>
+<li><a href="https://brif.tcti.cn/wangluo/social-65847983-58-11728.html">基于 Compositor-mirror-635 的极致延迟优化与内存拓扑分析 (Draft-01)</a></li>
+<li><a href="https://evcg.yx-sf.com/zhizhu/network-77359736-59-27677.html">基于 Compositor-mirror-635 的极致延迟优化与内存拓扑分析 (Draft-06)</a></li>
+<li><a href="https://dfoe.ai-hao123.com/liuliang/api-28111997-60-15906.html">基于 Compositor-mirror-635 的极致延迟优化与内存拓扑分析 (Core/生产环境运维)</a></li>
+</ul>
+</details>
+
+      </div>
+      <div class="mt-12 pt-6 border-t border-slate-200 flex flex-wrap items-center justify-between gap-4">
+        <a href="./index.html" class="inline-flex items-center gap-2 text-sm font-semibold text-blue-600 hover:text-blue-800 ">
+          <span>&larr; 查看更多归档文档</span>
+        </a>
+        <a href="../index.html" class="inline-flex items-center gap-2 text-sm font-medium text-slate-600 hover:text-slate-900 ">
+          <span>返回项目 README 首页 &rarr;</span>
+        </a>
+      </div>
+    </article>
+  </main>
+
+  <footer class="mt-20 border-t border-slate-200 bg-white py-12 text-slate-500 text-sm">
+  <div class="max-w-6xl mx-auto px-4 sm:px-6 flex flex-col sm:flex-row items-center justify-between gap-4">
+    <div class="flex items-center gap-2">
+      <span class="w-6 h-6 rounded bg-slate-800 text-white flex items-center justify-center text-xs font-bold">LM</span>
+      <span>© 2026 <strong>Compositor-mirror-635</strong> - 官方开源高可用拓扑镜像与白皮书</span>
+    </div>
+    <div class="flex items-center gap-4 text-xs text-slate-400">
+      <a href="../index.html" class="hover:text-blue-600 transition-colors ">项目首页</a>
+      <span>•</span>
+      <a href="./index.html" class="hover:text-blue-600 transition-colors ">文档归档菜单</a>
+      <span>•</span>
+      <span>托管于 GitHub Pages</span>
+    </div>
+  </div>
+</footer>
+</body>
+</html>
