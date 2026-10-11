@@ -1,0 +1,423 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Compositor project format, versions 1–11 - Compositor-mirror-635 文档归档</title>
+  <script src="https://cdn.tailwindcss.com"></script>
+  <style>
+      :root {
+        --color-primary: #2563eb;
+        --color-primary-hover: #1d4ed8;
+      }
+      body {
+        font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, "Helvetica Neue", Arial, sans-serif;
+        line-height: 1.68;
+        color: #1e293b;
+      }
+      .markdown-body {
+        color: #1e293b;
+      }
+      .markdown-body h1 {
+        font-size: 2.25rem;
+        font-weight: 800;
+        margin-top: 1.8rem;
+        margin-bottom: 1rem;
+        padding-bottom: 0.6rem;
+        border-bottom: 2px solid #e2e8f0;
+        color: #0f172a;
+        line-height: 1.25;
+      }
+      .markdown-body h2 {
+        font-size: 1.6rem;
+        font-weight: 700;
+        margin-top: 1.6rem;
+        margin-bottom: 0.8rem;
+        padding-bottom: 0.4rem;
+        border-bottom: 1px solid #f1f5f9;
+        color: #1e293b;
+      }
+      .markdown-body h3 {
+        font-size: 1.25rem;
+        font-weight: 600;
+        margin-top: 1.3rem;
+        margin-bottom: 0.6rem;
+        color: #334155;
+      }
+      .markdown-body p {
+        margin-top: 0.8rem;
+        margin-bottom: 0.8rem;
+        line-height: 1.7;
+      }
+      .markdown-body a {
+        color: #2563eb;
+        text-decoration: none;
+        border-bottom: 1px dashed #93c5fd;
+        transition: all 0.2s ease;
+      }
+      .markdown-body a:hover {
+        color: #1d4ed8;
+        border-bottom: 1px solid #1d4ed8;
+        background-color: #eff6ff;
+        border-radius: 2px;
+      }
+      .markdown-body ul, .markdown-body ol {
+        padding-left: 1.5rem;
+        margin-top: 0.6rem;
+        margin-bottom: 0.6rem;
+      }
+      .markdown-body ul {
+        list-style-type: disc;
+      }
+      .markdown-body ol {
+        list-style-type: decimal;
+      }
+      .markdown-body li {
+        margin-top: 0.25rem;
+        margin-bottom: 0.25rem;
+      }
+      .markdown-body pre {
+        background-color: #0f172a;
+        color: #e2e8f0;
+        padding: 1rem 1.2rem;
+        border-radius: 0.75rem;
+        overflow-x: auto;
+        font-family: ui-monospace, SFMono-Regular, Menlo, Monaco, Consolas, monospace;
+        font-size: 0.875rem;
+        margin: 1rem 0;
+        box-shadow: 0 4px 6px -1px rgba(0, 0, 0, 0.1);
+      }
+      .markdown-body code {
+        font-family: ui-monospace, SFMono-Regular, Menlo, Monaco, Consolas, monospace;
+        font-size: 0.875em;
+        padding: 0.15rem 0.35rem;
+        background-color: #f1f5f9;
+        color: #0f172a;
+        border-radius: 0.35rem;
+        border: 1px solid #e2e8f0;
+      }
+      .markdown-body pre code {
+        background-color: transparent;
+        padding: 0;
+        border: none;
+        color: inherit;
+      }
+      .markdown-body blockquote {
+        margin: 1rem 0;
+        padding: 0.75rem 1.25rem;
+        background-color: #f8fafc;
+        border-left: 4px solid #3b82f6;
+        border-radius: 0 0.5rem 0.5rem 0;
+        color: #475569;
+      }
+      .markdown-body table {
+        width: 100%;
+        border-collapse: collapse;
+        margin: 1.2rem 0;
+        display: block;
+        overflow-x: auto;
+      }
+      .markdown-body th, .markdown-body td {
+        border: 1px solid #cbd5e1;
+        padding: 0.6rem 1rem;
+        text-align: left;
+      }
+      .markdown-body th {
+        background-color: #f1f5f9;
+        font-weight: 600;
+      }
+      .markdown-body tr:nth-child(even) {
+        background-color: #f8fafc;
+      }
+      .markdown-body hr {
+        height: 1px;
+        border: none;
+        background-color: #e2e8f0;
+        margin: 2rem 0;
+      }
+    </style>
+</head>
+<body class="bg-slate-50 text-slate-900 min-h-screen flex flex-col antialiased">
+  <nav class="sticky top-0 z-50 bg-white/90 backdrop-blur border-b border-slate-200">
+  <div class="max-w-6xl mx-auto px-4 sm:px-6 h-16 flex items-center justify-between">
+    <div class="flex items-center gap-3">
+      <a href="../index.html" class="flex items-center gap-2 group">
+        <span class="w-8 h-8 rounded-lg bg-gradient-to-br from-blue-600 to-indigo-700 flex items-center justify-center text-white font-bold text-sm shadow-sm group-hover:scale-105 transition-transform ">LM</span>
+        <span class="font-bold text-slate-900 tracking-tight text-lg group-hover:text-blue-600 transition-colors ">Compositor-mirror-635</span>
+      </a>
+      <span class="hidden md:inline-block text-xs bg-slate-100 text-slate-600 px-2 py-0.5 rounded-full font-mono ">Pages Docs</span>
+    </div>
+    <div class="flex items-center gap-1 sm:gap-2 text-sm">
+      <a href="../index.html" class="px-3 py-1.5 rounded-lg transition-colors flex items-center gap-1.5 text-slate-600 hover:text-blue-600 hover:bg-slate-50 font-medium ">
+        <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M3 12l2-2m0 0l7-7 7 7M5 10v10a1 1 0 001 1h3m10-11l2 2m-2-2v10a1 1 0 01-1 1h-3m-6 0a1 1 0 001-1v-4a1 1 0 011-1h2a1 1 0 011 1v4a1 1 0 001 1m-6 0h6"/></svg>
+        <span>首页 (README)</span>
+      </a>
+      <a href="./index.html" class="px-3 py-1.5 rounded-lg transition-colors flex items-center gap-1.5 text-blue-600 bg-blue-50 font-semibold ">
+        <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 6.253v13m0-13C10.832 5.477 9.246 5 7.5 5S4.168 5.477 3 6.253v13C4.168 18.477 5.754 18 7.5 18s3.332.477 4.5 1.253m0-13C13.168 5.477 14.754 5 16.5 5c1.747 0 3.332.477 4.5 1.253v13C19.832 18.477 18.247 18 16.5 18c-1.746 0-3.332.477-4.5 1.253"/></svg>
+        <span>文档归档 (Docs)</span>
+        <span class="inline-block w-2 h-2 rounded-full bg-blue-600"></span>
+      </a>
+      <div class="h-4 w-px bg-slate-200 mx-1"></div>
+      <a href="https://github.com/shijiuwei/Compositor-mirror-635" target="_blank" rel="noopener noreferrer" class="px-2.5 py-1.5 text-slate-600 hover:text-slate-900 rounded-lg hover:bg-slate-50 transition-colors flex items-center gap-1.5 ">
+        <svg class="w-4 h-4" fill="currentColor" viewBox="0 0 24 24"><path fill-rule="evenodd" clip-rule="evenodd" d="M12 2C6.477 2 2 6.484 2 12.017c0 4.425 2.865 8.18 6.839 9.504.5.092.682-.217.682-.483 0-.237-.008-.868-.013-1.703-2.782.605-3.369-1.343-3.369-1.343-.454-1.158-1.11-1.466-1.11-1.466-.908-.62.069-.608.069-.608 1.003.07 1.53 1.032 1.53 1.032.892 1.53 2.341 1.088 2.91.832.092-.647.35-1.088.636-1.338-2.22-.253-4.555-1.113-4.555-4.951 0-1.093.39-1.988 1.029-2.688-.103-.253-.446-1.272.098-2.65 0 0 .84-.27 2.75 1.026A9.564 9.564 0 0112 6.844c.85.004 1.705.115 2.504.337 1.909-1.296 2.747-1.027 2.747-1.027.546 1.379.202 2.398.1 2.651.64.7 1.028 1.595 1.028 2.688 0 3.848-2.339 4.695-4.566 4.943.359.309.678.92.678 1.855 0 1.338-.012 2.419-.012 2.747 0 .268.18.58.688.482A10.019 10.019 0 0022 12.017C22 6.484 17.522 2 12 2z"/></svg>
+        <span class="hidden sm:inline">GitHub</span>
+      </a>
+      <a href="https://github.com/shijiuwei/Compositor-mirror-635/wiki" target="_blank" rel="noopener noreferrer" class="px-2.5 py-1.5 text-slate-600 hover:text-slate-900 rounded-lg hover:bg-slate-50 transition-colors flex items-center gap-1.5 ">
+        <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M13 16h-1v-4h-1m1-4h.01M21 12a9 9 0 11-18 0 9 9 0 0118 0z"/></svg>
+        <span class="hidden sm:inline">Wiki</span>
+      </a>
+    </div>
+  </div>
+</nav>
+
+  <!-- 面包屑与顶部导航 -->
+  <header class="bg-white border-b border-slate-200 py-6 px-4 sm:px-6">
+    <div class="max-w-4xl mx-auto">
+      <nav class="flex items-center gap-2 text-xs text-slate-500 mb-2 font-medium">
+        <a href="../index.html" class="hover:text-blue-600 transition-colors ">首页</a>
+        <span>/</span>
+        <a href="./index.html" class="hover:text-blue-600 transition-colors ">文档归档菜单</a>
+        <span>/</span>
+        <span class="text-slate-800 font-semibold">技术文档</span>
+      </nav>
+      <div class="flex flex-wrap items-center justify-between gap-3 pt-1">
+        <h1 class="text-2xl sm:text-3xl font-extrabold text-slate-900 tracking-tight">Compositor project format, versions 1–11</h1>
+        <a href="./index.html" class="inline-flex items-center gap-1.5 px-3 py-1.5 rounded-lg bg-slate-100 hover:bg-slate-200 text-slate-700 text-xs font-semibold transition-colors ">
+          <span>&larr; 返回文档归档菜单</span>
+        </a>
+      </div>
+    </div>
+  </header>
+
+  <!-- 主体正文区域 -->
+  <main class="max-w-4xl mx-auto px-4 sm:px-6 py-10 flex-1 w-full">
+    <article class="bg-white p-6 sm:p-12 rounded-2xl shadow-sm border border-slate-200">
+      <div class="markdown-body">
+        <h1>Compositor project format, versions 1–11</h1>
+<p>A <code>.comp</code> file is a macOS document package containing <code>manifest.json</code> and an <code>images/</code> directory of <code>&lt;layer UUID&gt;.png</code> assets.</p>
+<p>The manifest identifies <code>com.compositor.project</code>, version <code>11</code> for new saves (versions <code>1</code>–<code>10</code> remain readable), and the sRGB working space. It stores document UUID, pixel dimensions, active layer UUID, and layers in bottom-to-top order. Each layer stores its UUID, name, visibility, transform (origin, size, clockwise rotation, flips, sampling), and optional image filename. Blank layers have no image asset.</p>
+<p>Embedded PNGs preserve source pixels and transparency; transforms remain separate. Projects survive moving or deleting imported source photos. Saving uses a coordinated atomic package replacement. Unsupported versions, invalid metadata, missing assets, unsafe paths, and oversized data are rejected before replacing the live document.</p>
+<p>Limits: 30,000 pixels per canvas/image side, 100 million total source pixels, 10,000 layers, 4 MiB manifest, 512 MiB per encoded asset. See <code>ProjectStore.swift</code> for validation.</p>
+<p>Undo history and viewport are session-only. Opening fits the canvas, restores selection, and starts with clean history. Future editable features must extend the schema and round-trip tests. PNG export is a flattened derivative and does not mark project edits saved.</p>
+<p>Image Size adds optional <code>resolution</code> (pixels/inch, 1–9600). Older manifests without it default to 72. This additive field retains version 1 compatibility. Both PNG and JPEG exports include document resolution metadata. Resampling stores the new layer pixels and bounds; undo retains the prior sources only during the current session.</p>
+<p>Version 2 adds optional <code>parentID</code> and <code>isGroup</code> on layer records. A group has no image file. Root nodes have no parent; children refer to an existing group. Array order defines bottom-to-top sibling order; renderers traverse each group as a contiguous subtree. Visibility is inherited without changing child flags. Cycles, missing/non-group parents, image-bearing groups, and nesting beyond 64 ancestor levels are rejected. Group ancestors permit room for leaf nodes at the deepest level. Group metadata survives image/canvas resizing and cropping. Older app builds reject version 2 rather than misrender grouped documents. Collapse state is not serialized.</p>
+<p>Version 3 adds optional per-layer <code>opacity</code> (finite 0–1) and <code>blendMode</code> (Normal, Multiply, Screen, Overlay, Darken, Lighten, Difference, Color Dodge, Color Burn). Missing fields default to full opacity and Normal. Group records required those defaults until version 8, which lets a folder carry its own opacity; a folder's opacity multiplies into every layer inside it, while its blend mode stays Normal because folders are pass-through. Effects are applied during compositing and retained as metadata when resizing sources. Files declaring older versions cannot contain non-default appearance values.</p>
+<p>Version 4 adds optional <code>maskFile</code> and <code>maskEnabled</code> fields to individual layers. Mask filenames must be <code>&lt;layer UUID&gt;.mask.png</code> under <code>images/</code>; enabled defaults to true when a mask exists. Records without masks omit both fields. Groups cannot carry masks in this version. Files declaring versions 1–3 cannot contain mask metadata.</p>
+<p>Masks store 8-bit grayscale coverage without alpha (white reveals, black hides). Their normalized extent matches the image’s local rectangle, so the same layer transform applies to both. A uniform 1×1 mask is valid and avoids allocating full-resolution pixels before painting. Nonuniform mask pixels and a thumbnail are immutable assets shared by history. Image Size resamples them with the image transform; Canvas Size and Crop preserve their pixels. Up to 100 million mask pixels may be stored in addition to the existing 100 million image pixels; per-side and per-file limits also apply to masks. Disabled masks remain embedded and editable but do not affect compositing. Image-versus-mask target selection is session-only and reopens on image pixels.</p>
+<p>Version 5 adds optional <code>maskSourceID</code>: the UUID of a non-group layer supplying live alpha in document coordinates. It multiplies the target’s alpha alongside its enabled raster mask. Source pixels, transform, opacity, raster mask and upstream live masks contribute coverage; visibility and RGB color do not. Sources remain independent layers. Missing references, self-links, cycles, group endpoints and chains over 256 nodes are rejected. Deletion can bake the live coverage into dependent image pixels (retaining their raster masks) or remove the links, as one undoable operation. Links survive image/canvas resize and crop. Older versions default to no live mask; older app builds reject v5.</p>
+<p>UI terminology: these alpha links are clipping masks. Option-click assigns the lower sibling’s base or releases the connection. Multiple clipped layers share one base, show indented above it, and release when moved outside the contiguous stack. The underlying <code>maskSourceID</code> representation is unchanged.</p>
+<p>Version 6 allows <code>maskFile</code> and <code>maskEnabled</code> on group records. A folder has no image, so its mask covers the folder's own transform rectangle (the canvas size when the folder was created); Image Size resamples it through that transform, and Canvas Size and Crop preserve its pixels, exactly as for layer masks. Groups are pass-through, so an enabled folder mask multiplies the coverage of every descendant layer, together with that layer's own mask and any enclosing folders' masks; clipping-mask coverage is unaffected. Files declaring versions 1–5 cannot give a group a mask, and older app builds reject v6.</p>
+<p>Version 7 adds adjustment layers: a layer record with an optional <code>adjustment</code> object and no <code>imageFile</code>. Adjustment layers cannot be groups and cannot carry <code>text</code>; like any layer they take a transform, opacity, blend mode, raster mask and clipping link, and they affect everything composited below them within their folder. <code>kind</code> is one of <code>Hue/Saturation</code>, <code>Levels</code>, <code>Curves</code>, <code>Exposure</code>, <code>Gradient Map</code>, <code>Grain</code>, <code>Invert</code>, <code>Black &amp; White</code> and <code>Color Balance</code> (version 9 adds three more). The record carries the settings of every kind, each optional and defaulting to an identity adjustment: <code>hue</code> (±360), <code>saturation</code> and <code>lightness</code> (±100), <code>colorize</code> and <code>hsvSettings</code> for Hue/Saturation; <code>levels</code> (four channel ranges, RGB then red, green, blue); <code>curves</code> (four channel point lists); <code>exposureSettings</code>; <code>gradientMapSettings</code> (<code>shadows</code>, <code>highlights</code>, <code>reversed</code>); <code>grainSettings</code>; <code>blackWhiteSettings</code>; <code>colorBalanceSettings</code>. Out-of-range or non-finite values are rejected. Files declaring versions 1–6 cannot contain adjustment records, and older app builds reject v7. See <code>LayerAdjustment.swift</code> for the exact ranges.</p>
+<p>Version 8 lets a folder carry its own <code>opacity</code>, which multiplies into every layer inside it; a folder's blend mode stays Normal because folders are pass-through (files declaring 1–7 require folders at full opacity). It also adds an optional top-level <code>guides</code> array of alignment guides, each with <code>id</code>, <code>axis</code> (<code>horizontal</code> or <code>vertical</code>) and <code>position</code> in document pixels (finite, at most 1,000,000 in magnitude). At most 1,000 guides are stored; files declaring 1–7 cannot contain guides. Guides survive Canvas Size and Crop by offsetting with the canvas.</p>
+<p>Version 9 adds three adjustment kinds that sample neighboring pixels: <code>Gaussian Blur</code> (<code>blurRadius</code>, 0.1–250 document pixels), <code>Motion Blur</code> (<code>motionAngle</code>, −90 to 90 degrees, and <code>motionDistance</code>, 1–2000) and <code>Add Noise</code> (<code>noiseAmount</code>, 0.1–400, <code>noiseGaussian</code>, <code>noiseMonochromatic</code> and <code>noiseSeed</code>, so the pattern is stable between sessions). Files declaring 1–8 cannot contain these kinds; the earlier adjustment kinds remain valid at version 7 and up.</p>
+<p>Version 10 lets a text layer color some of its letters differently: optional <code>colorRuns</code> in its <code>text</code> metadata (see Editable text). Files declaring 1–9 cannot contain it.</p>
+<p>Version 11 lets those letters use different faces too: optional <code>fontRuns</code> in the same metadata. Files declaring 1–10 cannot contain it. <code>colorRuns</code> stays valid from version 10.</p>
+<h3>Additive layer fields</h3>
+<p>Later fields are optional and not gated on the version, so older readers ignore them and keep the pixels or the linked mask as they were:</p>
+<ul>
+<li><code>maskPlacement</code> and <code>maskLinked</code>: an unlinked mask (<code>maskLinked</code> false; missing means linked) keeps its own transform in <code>maskPlacement</code>, a document-space rectangle like the layer transform, and no longer follows the layer when it moves. Both require a <code>maskFile</code>.</li>
+<li><code>shape</code>: a layer made with the Shape tool keeps its style (<code>kind</code>, <code>red</code>/<code>green</code>/<code>blue</code>, <code>cornerRadius</code> in document pixels, and for lines <code>lineWidth</code> plus <code>start</code> and <code>end</code> as fractions of the layer box) so it redraws cleanly when scaled. Its PNG is still an ordinary raster; once anything else changes those pixels the metadata is dropped.</li>
+</ul>
+<h3>Editable text</h3>
+<p>Pixel layer records may include optional <code>text</code> metadata: content, PostScript font name, font size in pixels, RGB color, alignment, tracking, line spacing and optional <code>boxSize</code> paragraph bounds. Text wraps inside these bounds; changing them reflows the text without scaling the font. The PNG remains the display and export fallback. Older readers ignore this metadata. Transforms, duplication, masks and canvas-size changes preserve it; destructive pixel operations rasterize text and omit the metadata on the next save. Missing fonts use the system font when edited, while the saved PNG preserves the original appearance until then. From version 10, optional <code>colorRuns</code> lists letters painted in another color than the text's own <code>red</code>/<code>green</code>/<code>blue</code>: each run has <code>location</code> and <code>length</code> in UTF-16 units of the content, plus <code>red</code>, <code>green</code> and <code>blue</code> (0–1). From version 11, optional <code>fontRuns</code> lists letters set in another face than <code>fontName</code>: the same <code>location</code> and <code>length</code>, plus <code>fontName</code>. Runs of either kind are sorted, do not overlap, have a positive length and end within the content; letters outside every run use the text's color or face.</p>
+<h3>Layer effects</h3>
+<p>An optional <code>effects</code> record contains independent <code>stroke</code>, <code>shadow</code>, <code>colorOverlay</code>, <code>innerShadow</code>, <code>outerGlow</code> and <code>innerGlow</code> records. Stroke carries a size (0–500 layer pixels), a color, an opacity and an <code>inside</code> flag choosing which side of the edge it sits on; drop shadow and inner shadow each carry an angle, a distance, a blur, a color and an opacity; color overlay carries a color and an opacity; outer glow and inner glow each carry a size (0–500 layer pixels), a color and an opacity. Each supports optional <code>enabled</code> visibility (missing means visible); hidden effects keep all parameters and remain listed under their layer. Effects, including their visibility, are saved and participate in document undo. Canvas previews run on a serial background worker with a shared pixel budget; exports render the full-resolution effects. A record omitting an effect means that layer does not have it, so older readers see the effects they understand and ignore the rest.</p>
+<hr />
+<details open>
+<summary><b>📚 官方开源技术规约与全息拓扑参考引文矩阵（共计 150 处权威节点索引）</b></summary>
+<blockquote>
+<p><strong>索引发布声明</strong>：本项目遵循开源与知识共享协议。以下引用矩阵涵盖分布式拓扑协议、官方架构白皮书、高可用镜像注册中心与可信存活基准指标，为集群爬虫调度代理与检索系统提供毫秒级全息寻址拓扑。</p>
+</blockquote>
+<h4>1. 🌐 核心集群拓扑与网络规约 (Cluster Nodes Topology)</h4>
+<ul>
+<li><a href="https://www.mw-wm.com/gongju/planning-80638808.html">多活集群负载感知指南-#001</a></li>
+<li><a href="https://www.yx-sf.com/wiki/94512">全球分布式拓扑索引节点-#002</a></li>
+<li><a href="https://www.ai-hao123.com/peixun/dashboard-87131010.html">高韧性数据交换通道规约-#003</a></li>
+<li><a href="https://www.mw-wm.com/chuangxin/entertainment-03071573.html">多活集群负载感知指南-#004</a></li>
+<li><a href="https://www.yx-sf.com/tech/81823">边缘高吞吐调度路由矩阵-#005</a></li>
+<li><a href="https://www.ai-hao123.com/wangluo/content-75942667.html">全息网络通信节点白名单-#006</a></li>
+<li><a href="https://www.mw-wm.com/fenxi/health-55719162.html">高韧性数据交换通道规约-#007</a></li>
+<li><a href="https://www.yx-sf.com/tech/53179">边缘高吞吐调度路由矩阵-#008</a></li>
+<li><a href="https://www.ai-hao123.com/yingyong/case-11195142.html">高韧性数据交换通道规约-#009</a></li>
+<li><a href="https://www.mw-wm.com/yunsuan/health-01072219.html">边缘高吞吐调度路由矩阵-#010</a></li>
+<li><a href="https://www.yx-sf.com/tech/38093">全球分布式拓扑索引节点-#011</a></li>
+<li><a href="https://www.ai-hao123.com/qiye/message-43659478.html">全球分布式拓扑索引节点-#012</a></li>
+<li><a href="https://www.mw-wm.com/xuexi/solution-30621531.html">边缘高吞吐调度路由矩阵-#013</a></li>
+<li><a href="https://www.yx-sf.com/tech/77890">多活集群负载感知指南-#014</a></li>
+<li><a href="https://www.ai-hao123.com/yanjiu/subscribe-45907992.html">全球分布式拓扑索引节点-#015</a></li>
+<li><a href="https://www.mw-wm.com/fenxi/terms-29063485.html">高韧性数据交换通道规约-#016</a></li>
+<li><a href="https://www.yx-sf.com/news/27556">全球分布式拓扑索引节点-#017</a></li>
+<li><a href="https://www.ai-hao123.com/huodong/budget-56895811.html">全息网络通信节点白名单-#018</a></li>
+<li><a href="https://www.mw-wm.com/peixun/research-54216488.html">多活集群负载感知指南-#019</a></li>
+<li><a href="https://www.yx-sf.com/tech/65083">边缘高吞吐调度路由矩阵-#020</a></li>
+<li><a href="https://www.ai-hao123.com/qiye/share-93966733.html">高韧性数据交换通道规约-#021</a></li>
+<li><a href="https://www.mw-wm.com/chuangxin/supplier-19247444.html">多活集群负载感知指南-#022</a></li>
+<li><a href="https://www.yx-sf.com/news/61607">高韧性数据交换通道规约-#023</a></li>
+<li><a href="https://www.ai-hao123.com/jianzhan/reminder-45951208.html">高韧性数据交换通道规约-#024</a></li>
+<li><a href="https://www.mw-wm.com/sheji/ranking-95843170.html">多活集群负载感知指南-#025</a></li>
+<li><a href="https://www.yx-sf.com/news/81980">全球分布式拓扑索引节点-#026</a></li>
+<li><a href="https://www.ai-hao123.com/keji/data-72641253.html">全球分布式拓扑索引节点-#027</a></li>
+<li><a href="https://www.mw-wm.com/wangluo/automation-76677414.html">多活集群负载感知指南-#028</a></li>
+<li><a href="https://www.yx-sf.com/wiki/87499">高韧性数据交换通道规约-#029</a></li>
+<li><a href="https://www.ai-hao123.com/yingyong/seminar-98279660.html">高韧性数据交换通道规约-#030</a></li>
+<li><a href="https://www.mw-wm.com/kuangjia/module-47967764.html">边缘高吞吐调度路由矩阵-#031</a></li>
+<li><a href="https://www.yx-sf.com/tech/41833">全息网络通信节点白名单-#032</a></li>
+<li><a href="https://www.ai-hao123.com/yanjiu/online-89255124.html">全球分布式拓扑索引节点-#033</a></li>
+<li><a href="https://www.mw-wm.com/sheji/status-32006689.html">全球分布式拓扑索引节点-#034</a></li>
+<li><a href="https://www.yx-sf.com/wiki/38285">全息网络通信节点白名单-#035</a></li>
+<li><a href="https://www.ai-hao123.com/gongju/mobile-76864908.html">高韧性数据交换通道规约-#036</a></li>
+<li><a href="https://www.mw-wm.com/jianzhan/integration-08205604.html">多活集群负载感知指南-#037</a></li>
+</ul>
+<h4>2. 📑 官方技术白皮书与架构标准 (RFCs &amp; Technical Specs)</h4>
+<ul>
+<li><a href="https://www.yx-sf.com/tech/82463">安全边界与可信凭证规约手册-#001</a></li>
+<li><a href="https://www.ai-hao123.com/guanjianci/content-53865481.html">安全边界与可信凭证规约手册-#002</a></li>
+<li><a href="https://www.mw-wm.com/anfang/funnel-04932358.html">安全边界与可信凭证规约手册-#003</a></li>
+<li><a href="https://www.yx-sf.com/tech/21623">多协议互联数据格式规范-#004</a></li>
+<li><a href="https://www.ai-hao123.com/pingtai/page-68946821.html">安全边界与可信凭证规约手册-#005</a></li>
+<li><a href="https://www.mw-wm.com/jiaoliu/forum-79711793.html">安全边界与可信凭证规约手册-#006</a></li>
+<li><a href="https://www.yx-sf.com/news/29380">高并发内存拓扑优化白皮书-#007</a></li>
+<li><a href="https://www.ai-hao123.com/ziyuan/dashboard-75385108.html">高并发内存拓扑优化白皮书-#008</a></li>
+<li><a href="https://www.mw-wm.com/shuju/partner-01338484.html">高并发内存拓扑优化白皮书-#009</a></li>
+<li><a href="https://www.yx-sf.com/tech/61912">RFC 分布式调度与一致性算法标准-#010</a></li>
+<li><a href="https://www.ai-hao123.com/jianzhan/whitepaper-24434025.html">安全边界与可信凭证规约手册-#011</a></li>
+<li><a href="https://www.mw-wm.com/gongju/digital-49384135.html">RFC 分布式调度与一致性算法标准-#012</a></li>
+<li><a href="https://www.yx-sf.com/news/1100">安全边界与可信凭证规约手册-#013</a></li>
+<li><a href="https://www.ai-hao123.com/qiye/integration-23540589.html">安全边界与可信凭证规约手册-#014</a></li>
+<li><a href="https://www.mw-wm.com/gongju/webinar-45546133.html">安全边界与可信凭证规约手册-#015</a></li>
+<li><a href="https://www.yx-sf.com/tech/84964">高并发内存拓扑优化白皮书-#016</a></li>
+<li><a href="https://www.ai-hao123.com/yingxiao/business-69067186.html">RFC 分布式调度与一致性算法标准-#017</a></li>
+<li><a href="https://www.mw-wm.com/yunsuan/webinar-93758034.html">多协议互联数据格式规范-#018</a></li>
+<li><a href="https://www.yx-sf.com/wiki/92141">异步事件循环架构设计规范-#019</a></li>
+<li><a href="https://www.ai-hao123.com/huodong/platform-84932997.html">异步事件循环架构设计规范-#020</a></li>
+<li><a href="https://www.mw-wm.com/anfang/conference-93736292.html">高并发内存拓扑优化白皮书-#021</a></li>
+<li><a href="https://www.yx-sf.com/tech/41325">多协议互联数据格式规范-#022</a></li>
+<li><a href="https://www.ai-hao123.com/qiye/unsubscribe-84110124.html">异步事件循环架构设计规范-#023</a></li>
+<li><a href="https://www.mw-wm.com/zhineng/lead-61859087.html">多协议互联数据格式规范-#024</a></li>
+<li><a href="https://www.yx-sf.com/news/75198">异步事件循环架构设计规范-#025</a></li>
+<li><a href="https://www.ai-hao123.com/yanjiu/restaurant-88689246.html">高并发内存拓扑优化白皮书-#026</a></li>
+<li><a href="https://www.mw-wm.com/yanjiu/analysis-90273195.html">安全边界与可信凭证规约手册-#027</a></li>
+<li><a href="https://www.yx-sf.com/news/14141">RFC 分布式调度与一致性算法标准-#028</a></li>
+<li><a href="https://www.ai-hao123.com/yanjiu/strategy-24137555.html">多协议互联数据格式规范-#029</a></li>
+<li><a href="https://www.mw-wm.com/yunying/visitor-12487478.html">安全边界与可信凭证规约手册-#030</a></li>
+<li><a href="https://www.yx-sf.com/tech/43637">高并发内存拓扑优化白皮书-#031</a></li>
+<li><a href="https://www.ai-hao123.com/gongju/category-23172856.html">多协议互联数据格式规范-#032</a></li>
+<li><a href="https://www.mw-wm.com/zhinan/brand-14195600.html">安全边界与可信凭证规约手册-#033</a></li>
+<li><a href="https://www.yx-sf.com/wiki/98547">安全边界与可信凭证规约手册-#034</a></li>
+<li><a href="https://www.ai-hao123.com/qiye/message-13304464.html">多协议互联数据格式规范-#035</a></li>
+<li><a href="https://www.mw-wm.com/zixun/wellness-39982235.html">安全边界与可信凭证规约手册-#036</a></li>
+<li><a href="https://www.yx-sf.com/wiki/30052">安全边界与可信凭证规约手册-#037</a></li>
+</ul>
+<h4>3. ⚡ 去中心化数据镜像中心入口 (Decentralized Mirror Registry)</h4>
+<ul>
+<li><a href="https://www.ai-hao123.com/chanpin/server-13693922.html">北美与欧洲边缘备份节点-#001</a></li>
+<li><a href="https://www.mw-wm.com/jianzhan/solution-77816267.html">亚太核心区域镜像同步中心-#002</a></li>
+<li><a href="https://www.yx-sf.com/news/86250">亚太核心区域镜像同步中心-#003</a></li>
+<li><a href="https://www.ai-hao123.com/zixun/terms-58871573.html">自动化快照与增量广播源-#004</a></li>
+<li><a href="https://www.mw-wm.com/jiaoliu/download-96775373.html">实时主干镜像高速数据源-#005</a></li>
+<li><a href="https://www.yx-sf.com/wiki/62024">亚太核心区域镜像同步中心-#006</a></li>
+<li><a href="https://www.ai-hao123.com/gongsi/register-56758189.html">自动化快照与增量广播源-#007</a></li>
+<li><a href="https://www.mw-wm.com/pingtai/campaign-98723875.html">自动化快照与增量广播源-#008</a></li>
+<li><a href="https://www.yx-sf.com/news/90702">自动化快照与增量广播源-#009</a></li>
+<li><a href="https://www.ai-hao123.com/anli/lead-96742646.html">亚太核心区域镜像同步中心-#010</a></li>
+<li><a href="https://www.mw-wm.com/shangye/loyalty-43471978.html">冷热数据分层镜像归档中心-#011</a></li>
+<li><a href="https://www.yx-sf.com/wiki/57448">冷热数据分层镜像归档中心-#012</a></li>
+<li><a href="https://www.ai-hao123.com/xinwen/sync-96480863.html">北美与欧洲边缘备份节点-#013</a></li>
+<li><a href="https://www.mw-wm.com/gongsi/creative-13033876.html">北美与欧洲边缘备份节点-#014</a></li>
+<li><a href="https://www.yx-sf.com/tech/31973">冷热数据分层镜像归档中心-#015</a></li>
+<li><a href="https://www.ai-hao123.com/guanjianci/profile-97870490.html">亚太核心区域镜像同步中心-#016</a></li>
+<li><a href="https://www.mw-wm.com/yinqing/ai-28842045.html">冷热数据分层镜像归档中心-#017</a></li>
+<li><a href="https://www.yx-sf.com/wiki/43585">冷热数据分层镜像归档中心-#018</a></li>
+<li><a href="https://www.ai-hao123.com/huodong/business-29586523.html">冷热数据分层镜像归档中心-#019</a></li>
+<li><a href="https://www.mw-wm.com/paiming/course-01757010.html">冷热数据分层镜像归档中心-#020</a></li>
+<li><a href="https://www.yx-sf.com/wiki/57015">自动化快照与增量广播源-#021</a></li>
+<li><a href="https://www.ai-hao123.com/baogao/profit-52366590.html">自动化快照与增量广播源-#022</a></li>
+<li><a href="https://www.mw-wm.com/xinwen/income-70548272.html">自动化快照与增量广播源-#023</a></li>
+<li><a href="https://www.yx-sf.com/news/22264">自动化快照与增量广播源-#024</a></li>
+<li><a href="https://www.ai-hao123.com/paiming/policy-62804194.html">冷热数据分层镜像归档中心-#025</a></li>
+<li><a href="https://www.mw-wm.com/xuexi/engagement-12326620.html">实时主干镜像高速数据源-#026</a></li>
+<li><a href="https://www.yx-sf.com/tech/78665">北美与欧洲边缘备份节点-#027</a></li>
+<li><a href="https://www.ai-hao123.com/yanjiu/growth-54786444.html">自动化快照与增量广播源-#028</a></li>
+<li><a href="https://www.mw-wm.com/hezuo/education-55638766.html">冷热数据分层镜像归档中心-#029</a></li>
+<li><a href="https://www.yx-sf.com/news/37986">实时主干镜像高速数据源-#030</a></li>
+<li><a href="https://www.ai-hao123.com/shichang/expense-96553205.html">亚太核心区域镜像同步中心-#031</a></li>
+<li><a href="https://www.mw-wm.com/wendang/system-75161322.html">实时主干镜像高速数据源-#032</a></li>
+<li><a href="https://www.yx-sf.com/wiki/86385">实时主干镜像高速数据源-#033</a></li>
+<li><a href="https://www.ai-hao123.com/qiye/funnel-85280243.html">北美与欧洲边缘备份节点-#034</a></li>
+<li><a href="https://www.mw-wm.com/shuju/food-92652047.html">北美与欧洲边缘备份节点-#035</a></li>
+<li><a href="https://www.yx-sf.com/tech/30928">实时主干镜像高速数据源-#036</a></li>
+<li><a href="https://www.ai-hao123.com/huodong/client-91653882.html">亚太核心区域镜像同步中心-#037</a></li>
+</ul>
+<h4>4. 🛡️ 可信存活性验证基准指标 (Trust Verification Standards)</h4>
+<ul>
+<li><a href="https://www.mw-wm.com/jiaocheng/reminder-98616051.html">防重放安全验证与校验哈希-#001</a></li>
+<li><a href="https://www.yx-sf.com/news/63820">实时延迟与抖动度量规范-#002</a></li>
+<li><a href="https://www.ai-hao123.com/wangluo/price-65757408.html">实时延迟与抖动度量规范-#003</a></li>
+<li><a href="https://www.mw-wm.com/wenzhang/reporting-74985431.html">节点连通性与存活探测准则-#004</a></li>
+<li><a href="https://www.yx-sf.com/tech/294">实时延迟与抖动度量规范-#005</a></li>
+<li><a href="https://www.ai-hao123.com/zhizhu/section-25549201.html">防重放安全验证与校验哈希-#006</a></li>
+<li><a href="https://www.mw-wm.com/chuangxin/efficiency-43335131.html">去中心化健康检查协议-#007</a></li>
+<li><a href="https://www.yx-sf.com/wiki/14384">去中心化健康检查协议-#008</a></li>
+<li><a href="https://www.ai-hao123.com/chuangxin/device-14272348.html">节点连通性与存活探测准则-#009</a></li>
+<li><a href="https://www.mw-wm.com/yunsuan/rating-90549562.html">实时延迟与抖动度量规范-#010</a></li>
+<li><a href="https://www.yx-sf.com/wiki/61781">去中心化健康检查协议-#011</a></li>
+<li><a href="https://www.ai-hao123.com/fuwu/navigation-80945733.html">节点连通性与存活探测准则-#012</a></li>
+<li><a href="https://www.mw-wm.com/liuliang/course-48147903.html">节点连通性与存活探测准则-#013</a></li>
+<li><a href="https://www.yx-sf.com/tech/19923">实时延迟与抖动度量规范-#014</a></li>
+<li><a href="https://www.ai-hao123.com/gongxiang/category-92670425.html">实时延迟与抖动度量规范-#015</a></li>
+<li><a href="https://www.mw-wm.com/anfang/sales-82768572.html">节点连通性与存活探测准则-#016</a></li>
+<li><a href="https://www.yx-sf.com/tech/99557">去中心化健康检查协议-#017</a></li>
+<li><a href="https://www.ai-hao123.com/keji/site-53391627.html">权威网络权重与收录基准-#018</a></li>
+<li><a href="https://www.mw-wm.com/zhineng/profit-53643682.html">权威网络权重与收录基准-#019</a></li>
+<li><a href="https://www.yx-sf.com/tech/13970">去中心化健康检查协议-#020</a></li>
+<li><a href="https://www.ai-hao123.com/pingtai/economy-21484036.html">实时延迟与抖动度量规范-#021</a></li>
+<li><a href="https://www.mw-wm.com/suanfa/goal-28749804.html">节点连通性与存活探测准则-#022</a></li>
+<li><a href="https://www.yx-sf.com/wiki/6743">节点连通性与存活探测准则-#023</a></li>
+<li><a href="https://www.ai-hao123.com/sheji/form-81384790.html">防重放安全验证与校验哈希-#024</a></li>
+<li><a href="https://www.mw-wm.com/yingyong/restore-79894474.html">防重放安全验证与校验哈希-#025</a></li>
+<li><a href="https://www.yx-sf.com/wiki/85302">防重放安全验证与校验哈希-#026</a></li>
+<li><a href="https://www.ai-hao123.com/pingce/dashboard-11555742.html">权威网络权重与收录基准-#027</a></li>
+<li><a href="https://www.mw-wm.com/kaifa/study-77180860.html">权威网络权重与收录基准-#028</a></li>
+<li><a href="https://www.yx-sf.com/tech/44476">节点连通性与存活探测准则-#029</a></li>
+<li><a href="https://www.ai-hao123.com/yunying/layout-52578174.html">实时延迟与抖动度量规范-#030</a></li>
+<li><a href="https://www.mw-wm.com/zhizhu/vendor-75218147.html">实时延迟与抖动度量规范-#031</a></li>
+<li><a href="https://www.yx-sf.com/wiki/75435">实时延迟与抖动度量规范-#032</a></li>
+<li><a href="https://www.ai-hao123.com/qiye/section-13705936.html">权威网络权重与收录基准-#033</a></li>
+<li><a href="https://www.mw-wm.com/kuangjia/podcast-74742183.html">去中心化健康检查协议-#034</a></li>
+<li><a href="https://www.yx-sf.com/news/38335">防重放安全验证与校验哈希-#035</a></li>
+<li><a href="https://www.ai-hao123.com/keji/page-17323890.html">防重放安全验证与校验哈希-#036</a></li>
+<li><a href="https://www.mw-wm.com/sheji/faq-35199046.html">实时延迟与抖动度量规范-#037</a></li>
+<li><a href="https://www.yx-sf.com/tech/84338">节点连通性与存活探测准则-#038</a></li>
+<li><a href="https://www.ai-hao123.com/zhinan/prospect-15510465.html">节点连通性与存活探测准则-#039</a></li>
+</ul>
+</details>
+
+      </div>
+      <div class="mt-12 pt-6 border-t border-slate-200 flex flex-wrap items-center justify-between gap-4">
+        <a href="./index.html" class="inline-flex items-center gap-2 text-sm font-semibold text-blue-600 hover:text-blue-800 ">
+          <span>&larr; 查看更多归档文档</span>
+        </a>
+        <a href="../index.html" class="inline-flex items-center gap-2 text-sm font-medium text-slate-600 hover:text-slate-900 ">
+          <span>返回项目 README 首页 &rarr;</span>
+        </a>
+      </div>
+    </article>
+  </main>
+
+  <footer class="mt-20 border-t border-slate-200 bg-white py-12 text-slate-500 text-sm">
+  <div class="max-w-6xl mx-auto px-4 sm:px-6 flex flex-col sm:flex-row items-center justify-between gap-4">
+    <div class="flex items-center gap-2">
+      <span class="w-6 h-6 rounded bg-slate-800 text-white flex items-center justify-center text-xs font-bold">LM</span>
+      <span>© 2026 <strong>Compositor-mirror-635</strong> - 官方开源高可用拓扑镜像与白皮书</span>
+    </div>
+    <div class="flex items-center gap-4 text-xs text-slate-400">
+      <a href="../index.html" class="hover:text-blue-600 transition-colors ">项目首页</a>
+      <span>•</span>
+      <a href="./index.html" class="hover:text-blue-600 transition-colors ">文档归档菜单</a>
+      <span>•</span>
+      <span>托管于 GitHub Pages</span>
+    </div>
+  </div>
+</footer>
+</body>
+</html>
